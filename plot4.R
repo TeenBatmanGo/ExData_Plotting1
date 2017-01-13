@@ -1,0 +1,20 @@
+library(data.table)
+dat<-fread("household_power_consumption.txt",sep=";",na.strings="?",stringsAsFactors=FALSE,header=T)
+consume<-subset(dat,dat$Date %in% c("1/2/2007","2/2/2007"))
+
+# Convert the Date and Time variables to Date/Time classes
+datetime<-strptime(paste(consume$Date,consume$Time),"%d/%m/%Y %H:%M:%S")
+consume1<-cbind(consume,as.data.frame(datetime))
+
+png("plot4.png",width=480,height=480)
+par(mfrow=c(2,2))
+attach(consume1)
+plot(datetime,Global_active_power,type="l",xlab="",ylab="Global Active Power")
+plot(datetime,Voltage,type="l",ylab="Voltage")
+plot(datetime,Sub_metering_1,type="l",ylab="Energy Submetering",xlab="")
+lines(datetime,Sub_metering_2,type="l",col="red")
+lines(datetime,Sub_metering_3,type="l",col="blue")
+legend("topright",legend=colnames(consume)[7:9],lty=rep(1,3),col=c("black","red","blue"))
+plot(datetime,Global_reactive_power,type="l")
+detach(consume1)
+dev.off()
